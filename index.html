@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Léa · Révisions</title>
+  <meta name="description" content="Espace de révision : minuteur Pomodoro, tâches, flashcards, actualité juridique, musique et un petit compagnon.">
+  <meta name="theme-color" content="#fde3ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Révisions">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Italiana&family=Jost:wght@300;400;500&family=Manrope:wght@300;400;500;600&family=Pinyon+Script&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="bg" aria-hidden="true">
+    <div class="bg-gradient"></div>
+    <div class="bg-blobs"><i></i><i></i><i></i><i></i></div>
+    <div class="bg-image"></div>
+    <div class="bg-dim"></div>
+    <div class="bg-grain"></div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="hello">
+        <p class="date" id="date"></p>
+        <h1 class="greet"><span id="greet-word">Bonjour</span><span class="comma">,</span> <em id="greet-name">Léa</em></h1>
+      </div>
+      <div class="top-right">
+        <div class="clock" id="clock" aria-live="off"></div>
+        <nav class="top-actions glass" aria-label="Actions">
+          <button class="icon-btn" id="btn-zen" title="Mode focus (F)" aria-label="Mode focus"></button>
+          <button class="icon-btn" id="btn-edit" title="Organiser" aria-label="Organiser"></button>
+          <button class="icon-btn" id="btn-custom" title="Personnaliser" aria-label="Personnaliser"></button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="grid" id="grid"></main>
+
+    <footer class="signature">
+      <span class="sig-line"></span>
+      <p><span class="sig-text">Je t’aime Léa</span> <span class="sig-heart">❤️</span></p>
+      <span class="sig-line"></span>
+    </footer>
+  </div>
+
+  <div class="edit-bar glass" id="edit-bar">
+    <button class="btn soft" id="edit-add"></button>
+    <button class="btn primary" id="edit-done"></button>
+  </div>
+  <button class="zen-exit glass" id="zen-exit" aria-label="Quitter le mode focus"></button>
+
+  <aside class="drawer glass" id="drawer" aria-label="Personnaliser"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div id="modal-root"></div>
+  <div class="toasts" id="toasts"></div>
+  <div class="fx-layer" id="fx" aria-hidden="true"></div>
+
+  <script src="vendor/Sortable.min.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/widgets/timer.js"></script>
+  <script src="js/widgets/pet.js"></script>
+  <script src="js/widgets/music.js"></script>
+  <script src="js/widgets/news.js"></script>
+  <script src="js/widgets/todo.js"></script>
+  <script src="js/widgets/flashcards.js"></script>
+  <script src="js/widgets/tools.js"></script>
+  <script src="js/widgets/countdown.js"></script>
+  <script src="js/widgets/photo.js"></script>
+  <script src="js/widgets/notes.js"></script>
+  <script src="js/widgets/maxim.js"></script>
+  <script src="js/widgets/stats.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
