@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grand Jeu 911 GTS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Manrope:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered "cockpit" column; a tachometer gauge tracks quiz progress, stages swap in place */
+:root{
+  --bg:#0d0e10; --panel:#16181c; --line:#2a2d33; --fg:#eceae4; --muted:#9a978f;
+  --accent:#f2c230; --red:#e5483b; --love:#ff6f91;
+  --display:"Michroma","Eurostile","Arial Black",sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:24px 48px;
+  background-image:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(242,194,48,.10),transparent 70%);min-height:100%}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:8px;color:var(--accent)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,46px);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:.02em}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(19px,4.6vw,24px);line-height:1.3;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted);max-width:52ch}
+.specs{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.specs div{background:var(--panel);padding:14px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.specs b{font-family:var(--display);font-weight:400;font-size:clamp(15px,4vw,20px);font-variant-numeric:tabular-nums}
+.specs span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gauge{display:flex;align-items:center;gap:20px}
+.gauge svg{width:150px;flex:none;max-width:40%}
+.gauge .txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.gauge .txt small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.gauge .txt strong{font-family:var(--display);font-weight:400;font-size:20px}
+#needle{transform-origin:100px 100px;transition:transform .9s cubic-bezier(.3,1.4,.5,1)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:440px){.opts{grid-template-columns:1fr}.specs{grid-template-columns:1fr 1fr 1fr}}
+button{font:inherit;cursor:pointer}
+.opt{background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:left;font-weight:600;transition:border-color .2s,background .2s,transform .15s}
+.opt:hover{border-color:var(--accent);background:rgba(242,194,48,.06)}
+.opt:focus-visible,.cta:focus-visible,.ghost:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.cta{background:var(--accent);color:#141414;border:0;border-radius:999px;padding:16px 28px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:14px;align-self:flex-start;transition:transform .15s}
+.cta:hover{transform:translateY(-2px)}
+.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:14px 22px;font-weight:600}
+.feedback{min-height:1.5em;color:var(--accent);font-weight:600}
+.qnum{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.fine{font-size:12px;color:var(--muted)}
+.clause{border:1px dashed var(--accent);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px;background:rgba(242,194,48,.05)}
+.clause .big{font-family:var(--display);font-size:clamp(20px,5.4vw,28px);line-height:1.3;color:var(--love)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;position:relative;min-height:56px}
+#no{position:relative;transition:transform .25s}
+.timer{font-family:var(--display);font-size:clamp(48px,16vw,84px);text-align:center;font-variant-numeric:tabular-nums;color:var(--love)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--love));transition:width 1s linear}
+.stage{animation:in .5s ease both}
+@keyframes in{from{opacity:.0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:5}
+</style>
+</head>
+<body>
+
+<canvas id="fx"></canvas>
+<main class="wrap">
+  <div class="top"><span class="live"><i></i> Tirage en cours</span><span>Participation n° 000 001</span></div>
+
+  <section id="intro" class="stage" style="display:flex;flex-direction:column;gap:22px">
+    <h1>Gagne une <em>911 GTS</em> aujourd'hui</h1>
+    <p class="lead">Tu as été sélectionnée parmi des millions de participantes. Réponds au questionnaire, valide la condition finale, et les clés sont à toi.</p>
+    <div class="specs">
+      <div><b>480 ch</b><span>Puissance</span></div>
+      <div><b>312 km/h</b><span>V-max</span></div>
+      <div><b>3,4 s</b><span>0–100 km/h</span></div>
+    </div>
+    <button class="cta" id="start">Commencer le questionnaire</button>
+    <p class="fine">Il ne reste qu'une seule voiture. Une seule. Pour toi.</p>
+  </section>
+
+  <section id="quiz" class="stage" hidden style="display:flex;flex-direction:column;gap:22px">
+    <div class="gauge">
+      <svg viewBox="0 0 200 130" aria-hidden="true">
+        <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#2a2d33" stroke-width="10" stroke-linecap="round"/>
+        <path d="M163 52 A80 80 0 0 1 180 100" fill="none" stroke="#e5483b" stroke-width="10"/>
+        <g id="ticks" fill="#9a978f" font-family="Manrope,sans-serif" font-size="11" text-anchor="middle"></g>
+        <line id="needle" x1="100" y1="100" x2="100" y2="34" stroke="#f2c230" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="100" cy="100" r="7" fill="#f2c230"/>
+        <text x="100" y="124" fill="#9a978f" font-family="Manrope,sans-serif" font-size="9" text-anchor="middle" letter-spacing="1.5">× 1000 TR/MIN</text>
+      </svg>
+      <div class="txt"><small>Progression vers les clés</small><strong id="pct">0 %</strong></div>
+    </div>
+    <div class="card">
+      <span class="qnum" id="qnum"></span>
+      <h2 id="qtext"></h2>
+      <div class="opts" id="opts"></div>
+      <p class="feedback" id="fb" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section id="final" class="stage" hidden style="display:flex;flex-direction:column;gap:22px">
+    <h1>Félicitations, tu es <em>finaliste</em></h1>
+    <p class="lead">Questionnaire validé à 100 %. Avant la remise des clés, le règlement impose une dernière condition, non négociable.</p>
+    <div class="clause">
+      <span class="qnum">Article 11 · Condition finale</span>
+      <p class="big">10 minutes de câlin avec Rafael, ton copain d'amour.</p>
+      <p class="fine">Câlin continu, sans téléphone, bisous autorisés et même encouragés.</p>
+    </div>
+    <div class="row" id="choice">
+      <button class="cta" id="yes">J'accepte la condition</button>
+      <button class="ghost" id="no">Je refuse</button>
+    </div>
+    <p class="feedback" id="fb2" aria-live="polite"></p>
+  </section>
+
+  <section id="hug" class="stage" hidden style="display:flex;flex-direction:column;gap:22px">
+    <h2>Câlin en cours de validation</h2>
+    <p class="lead">Va voir Rafael maintenant. Le chrono démarre quand tu es dans ses bras.</p>
+    <div class="timer" id="clock">10:00</div>
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="row"><button class="cta" id="go">Je suis dans ses bras, go</button></div>
+  </section>
+
+  <section id="end" class="stage" hidden style="display:flex;flex-direction:column;gap:22px">
+    <h1>Bon… pour la <em>Porsche</em>, c'était une blague.</h1>
+    <p class="lead">Il n'y a jamais eu de 911 GTS. Mais le câlin, lui, était 100 % réel, et c'était le vrai premier prix depuis le début.</p>
+    <div class="clause">
+      <p class="big">Je t'aime. ❤</p>
+      <p class="fine">Signé : Rafael, organisateur, jury et unique gagnant de ce concours.</p>
+    </div>
+    <p class="fine">Réclamations à adresser en personne, de préférence avec un autre câlin.</p>
+  </section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const show=id=>{for(const s of ["intro","quiz","final","hug","end"]){const el=$(s);el.hidden=s!==id;el.style.display=s===id?"flex":"none"}window.scrollTo({top:0,behavior:"smooth"})};
+
+// tachometer ticks 0..8
+(()=>{const g=$("ticks");for(let i=0;i<=8;i++){const a=Math.PI*(1-i/8),r=62;const x=100+r*Math.cos(a),y=100-r*Math.sin(a)+4;
+ const t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x.toFixed(1));t.setAttribute("y",y.toFixed(1));t.textContent=i;if(i>=7)t.setAttribute("fill","#e5483b");g.appendChild(t)}})();
+const setGauge=p=>{$("needle").style.transform=`rotate(${-90+180*p}deg)`;$("pct").textContent=Math.round(p*100)+" %"};
+
+const Q=[
+ {q:"Quelle couleur pour ta future 911 GTS ?",o:["Jaune course","Noir intense","Rose bonbon","Bleu nuit"],fb:"Excellent choix, c'est noté dans le dossier."},
+ {q:"Quelle est la vitesse de pointe d'une 911 GTS ?",o:["180 km/h","250 km/h","312 km/h","400 km/h"],ok:2,fb:"Exact, 312 km/h. Tu connais tes voitures.",bad:"Presque. C'est 312 km/h, mais on te l'accorde."},
+ {q:"Qui est le meilleur copain du monde ?",o:["Rafael","Rafael","Rafael","Quelqu'un d'autre"],flee:3,fb:"Bonne réponse. (Il n'y en avait qu'une.)"},
+ {q:"Combien de câlins par jour est-il raisonnable de recevoir ?",o:["1","10","50","Infini"],fb:"Réponse acceptée. Retiens bien ce chiffre, il va servir."},
+ {q:"Dernière question : est-ce que tu aimes Rafael ?",o:["Oui","Énormément","Plus que tout","Non"],flee:3,fb:"Réponse validée par le jury."}
+];
+let i=0,busy=false;
+function render(){const it=Q[i];$("qnum").textContent=`Question ${i+1} sur ${Q.length}`;$("qtext").textContent=it.q;$("fb").textContent="";
+ const box=$("opts");box.innerHTML="";it.o.forEach((t,k)=>{const b=document.createElement("button");b.className="opt";b.textContent=t;
+  if(k===it.flee){const run=e=>{e.preventDefault();b.style.transform=`translate(${(Math.random()-.5)*160}px,${(Math.random()-.5)*80}px)`;$("fb").textContent="Cette réponse n'est pas disponible dans ta région."};b.addEventListener("mouseenter",run);b.addEventListener("click",run);b.addEventListener("touchstart",run,{passive:false})}
+  else b.onclick=()=>answer(k);box.appendChild(b)})}
+function answer(k){if(busy)return;busy=true;const it=Q[i];$("fb").textContent=(it.ok!==undefined&&k!==it.ok)?it.bad:it.fb;setGauge((i+1)/Q.length);
+ setTimeout(()=>{busy=false;i++;if(i<Q.length)render();else show("final")},1300)}
+$("start").onclick=()=>{show("quiz");setGauge(0);render()};
+
+// "Je refuse" flees
+const no=$("no");const flee=e=>{e.preventDefault();no.style.transform=`translate(${(Math.random()-.5)*220}px,${(Math.random()-.5)*90}px)`;$("fb2").textContent="Refus impossible : clause irrévocable (voir article 11)."};
+["mouseenter","click","touchstart"].forEach(ev=>no.addEventListener(ev,flee,{passive:false}));
+$("yes").onclick=()=>{confetti();show("hug")};
+
+// 10 minute hug timer
+const TOTAL=600;let left=TOTAL,tick=null;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+$("go").onclick=()=>{if(tick)return;$("go").textContent="Câlin en cours…";$("go").disabled=true;
+ tick=setInterval(()=>{left--;$("clock").textContent=fmt(left);$("barfill").style.width=((TOTAL-left)/TOTAL*100)+"%";
+  if(left<=0){clearInterval(tick);confetti();show("end")}},1000)};
+// secret skip for testing: double-click the timer
+$("clock").ondblclick=()=>{left=1};
+
+// confetti + hearts
+function confetti(){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const c=$("fx"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+ const cols=["#f2c230","#ff6f91","#eceae4","#e5483b"];const P=Array.from({length:140},()=>({x:c.width/2,y:c.height*.35,vx:(Math.random()-.5)*12,vy:Math.random()*-12-3,s:Math.random()*6+4,c:cols[Math.random()*4|0],h:Math.random()<.3,r:Math.random()*6}));
+ let f=0;(function loop(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=.1;x.fillStyle=p.c;
+  if(p.h){x.font=`${p.s*3}px sans-serif`;x.fillText("♥",p.x,p.y)}else{x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()}});
+  if(++f<160)requestAnimationFrame(loop);else x.clearRect(0,0,c.width,c.height)})()}
+</script>
+</body>
+</html>
